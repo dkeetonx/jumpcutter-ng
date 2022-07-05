@@ -19,8 +19,12 @@ my $padding = 0.150;
 my $threads = 2;
 my $vcodec = "libx264";
 my $acodec = "libopus";
+my $aq = "";
 my $crf = 17;
 my $preset = "ultrafast";
+my $profile = "";
+my $pix_fmt = "";
+my $qscale = "";
 
 GetOptions('input=s' => \$file,
            'output=s' => \$outfile,
@@ -31,8 +35,12 @@ GetOptions('input=s' => \$file,
            'threads=i' => \$threads,
            'crf=i' => \$crf,
            'acodec=s' => \$acodec,
+           'aq=i' => \$aq,
            'vcodec=s' => \$vcodec,
-           'preset=s' => \$preset
+           'preset=s' => \$preset,
+           'profile=s' => \$profile,
+           'pix_fmt=s' => \$pix_fmt,
+           'qscale=i' => \$qscale
           ) || die;
 
 print "input = $file\n";
@@ -43,9 +51,13 @@ print "noise = $noise\n";
 print "padding = $padding\n";
 print "threads = $threads\n";
 print "acodec = $acodec\n";
+print "aq = $aq\n";
 print "vcodec = $vcodec\n";
+print "profile = $profile\n";
+print "pix_fmt = $pix_fmt\n";
 print "crf = $crf\n";
 print "preset = $preset\n";
+print "qscale = $qscale\n";
 
 my $probe = qq[ ffprobe -v error -select_streams v -of default=noprint_wrappers=1:nokey=1 ];
 $probe .= qq[ -show_entries stream=width,height,r_frame_rate "$file" ];
@@ -148,8 +160,29 @@ while (my $line = <$ff_stderr>)
 print $mlt qq[  </playlist>\n];
 print $mlt qq[</mlt>\n];
 
+my $video_opts = "vcodec=$vcodec ";
+if ($profile)
+{
+  $video_opts .= "profile=$profile ";
+}
+if ($pix_fmt)
+{
+  $video_opts .= "pix_fmt=$pix_fmt ";
+}
+if ($qscale)
+{
+  $video_opts .= "qscale=$qscale ";
+}
+$video_opts .= "crf=$crf preset=$preset";
 
-$command  = "melt-7 -consumer avformat:$outfile vcodec=$vcodec acodec=$acodec crf=$crf preset=$preset ";
+
+my $audio_opts = "acodec=$acodec ";
+if ($aq)
+{
+  $audio_opts .= "aq=$aq ";
+}
+
+$command  = "melt-7 -consumer avformat:$outfile $video_opts $audio_opts ";
 #$command .= " frame_rate_den=$frame_rate_den frame_rate_num=$frame_rate_num ";
 #$command  = "melt-7 -consumer avformat:test.ts f=mpegts vcodec=$vcodec acodec=$acodec crf=$crf preset=$preset ";
 
