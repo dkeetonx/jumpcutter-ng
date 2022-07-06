@@ -89,7 +89,7 @@ print "dimensions = ${width}x${height}\n";
 my $mlt_file = "${outfile}.mlt";
 my $segmentStart = 0.0;
 
-my $command = "ffmpeg -i $file -af silencedetect=n=$dbThreshold:d=$duration:noise=$noise -f null -";
+my $command = qq[ffmpeg -i "$file" -af silencedetect=n=$dbThreshold:d=$duration:noise=$noise -f null -];
 print "$command\n";
 my $pid = open3(my $ff_in, my $ff_out, my $ff_stderr = gensym, $command);
 
@@ -182,11 +182,11 @@ if ($aq)
   $audio_opts .= "aq=$aq ";
 }
 
-$command  = "melt-7 -consumer avformat:$outfile $video_opts $audio_opts ";
+$command  = qq[melt-7 -consumer "avformat:$outfile" $video_opts $audio_opts ];
 #$command .= " frame_rate_den=$frame_rate_den frame_rate_num=$frame_rate_num ";
 #$command  = "melt-7 -consumer avformat:test.ts f=mpegts vcodec=$vcodec acodec=$acodec crf=$crf preset=$preset ";
 
-$command .= "$mlt_file";
+$command .= qq["$mlt_file"];
 print "$command\n";
 system($command);
 
