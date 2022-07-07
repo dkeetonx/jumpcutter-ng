@@ -52,6 +52,8 @@
 
     --aq                   Q value used by certain some Codecs
 
+    --keep                 Keep temprorary files
+
 
 
 ### More Examples

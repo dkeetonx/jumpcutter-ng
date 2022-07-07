@@ -25,6 +25,7 @@ my $preset = "ultrafast";
 my $profile = "";
 my $pix_fmt = "";
 my $qscale = "";
+my $keep = '';
 
 GetOptions('input=s' => \$file,
            'output=s' => \$outfile,
@@ -40,7 +41,8 @@ GetOptions('input=s' => \$file,
            'preset=s' => \$preset,
            'profile=s' => \$profile,
            'pix_fmt=s' => \$pix_fmt,
-           'qscale=i' => \$qscale
+           'qscale=i' => \$qscale,
+           'keep' => \$keep
           ) || die;
 
 print "input = $file\n";
@@ -169,7 +171,7 @@ if ($pix_fmt)
 {
   $video_opts .= "pix_fmt=$pix_fmt ";
 }
-if ($qscale)
+if ($qscale ne "")
 {
   $video_opts .= "qscale=$qscale ";
 }
@@ -177,7 +179,7 @@ $video_opts .= "crf=$crf preset=$preset";
 
 
 my $audio_opts = "acodec=$acodec ";
-if ($aq)
+if ($aq ne "")
 {
   $audio_opts .= "aq=$aq ";
 }
@@ -190,4 +192,8 @@ $command .= qq["$mlt_file"];
 print "$command\n";
 system($command);
 
+if (!$keep)
+{
+  unlink($mlt_file);
+}
 exit;
