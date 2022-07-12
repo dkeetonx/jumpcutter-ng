@@ -16,7 +16,7 @@ my $dbThreshold = '-30dB';
 my $duration = '1.000';
 my $noise = '0.005';
 my $padding = 0.150;
-my $threads = 2;
+my $threads = 8;
 my $vcodec = "libx264";
 my $acodec = "libopus";
 my $aq = "";
@@ -25,6 +25,8 @@ my $preset = "ultrafast";
 my $profile = "";
 my $pix_fmt = "";
 my $qscale = "";
+my $gop = "";
+my $real_time = -4;
 my $keep = '';
 
 GetOptions('input=s' => \$file,
@@ -42,6 +44,8 @@ GetOptions('input=s' => \$file,
            'profile=s' => \$profile,
            'pix_fmt=s' => \$pix_fmt,
            'qscale=i' => \$qscale,
+           'gop=i' => \$gop,
+           'real_time=f' => \$real_time,
            'keep' => \$keep
           ) || die;
 
@@ -60,6 +64,8 @@ print "pix_fmt = $pix_fmt\n";
 print "crf = $crf\n";
 print "preset = $preset\n";
 print "qscale = $qscale\n";
+print "gop = $gop\n";
+print "real_time = $real_time\n";
 
 my $probe = qq[ ffprobe -v error -select_streams v -of default=noprint_wrappers=1:nokey=1 ];
 $probe .= qq[ -show_entries stream=width,height,r_frame_rate "$file" ];
@@ -175,7 +181,11 @@ if ($qscale ne "")
 {
   $video_opts .= "qscale=$qscale ";
 }
-$video_opts .= "crf=$crf preset=$preset";
+if ($gop ne "")
+{
+  $video_opts .= "g=$gop ";
+}
+$video_opts .= "crf=$crf preset=$preset threads=$threads real_time=$real_time";
 
 
 my $audio_opts = "acodec=$acodec ";
@@ -184,7 +194,7 @@ if ($aq ne "")
   $audio_opts .= "aq=$aq ";
 }
 
-$command  = qq[melt-7 -consumer "avformat:$outfile" $video_opts $audio_opts ];
+$command  = qq[melt-7 -consumer "avformat:$outfile" $video_opts $audio_opts];
 #$command .= " frame_rate_den=$frame_rate_den frame_rate_num=$frame_rate_num ";
 #$command  = "melt-7 -consumer avformat:test.ts f=mpegts vcodec=$vcodec acodec=$acodec crf=$crf preset=$preset ";
 

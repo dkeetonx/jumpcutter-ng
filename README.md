@@ -36,7 +36,9 @@
 
     --noise                The amount of noise
 
-    --vcodec               Video codec for the output file. Use --vcodec=list to see options'
+    --threads              Sets the number of threads (default: 8)
+
+    --vcodec               Video codec for the output file. Use --vcodec=list to see options
 
     --crf                  CRF Value to give h264, h265 and other compabitble vcodecs.
 
@@ -48,9 +50,11 @@
 
     --preset               Speed of encoding for h264, h265 and other compatible vcodecs
 
+    --real_time            Enable frame-dropping (positive) or disable frame-dropping (negative) (default: -4)
+
     --acodec               Audio codec to use. (default=libopus)
 
-    --aq                   Q value used by certain some Codecs
+    --aq                   Q value used by some audio codecs
 
     --keep                 Keep temprorary files
 
